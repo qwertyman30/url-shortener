@@ -1,0 +1,73 @@
+version: "3.8"
+services:
+  backend:
+    build: .
+    ports:
+      - 3000:3000
+    networks:
+      - my-network
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+
+  migrations:
+    build: .
+    command: npx knex migrate:latest
+    networks:
+      - my-network
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: 'postgres'
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    # environment:
+    #   DB_HOST: host.docker.internal
+    #   DB_PORT: 5432
+    #   POSTGRES_USER: postgres
+    #   POSTGRES_PASSWORD: postgres
+    #   POSTGRES_DB: url_shortener_db
+    networks:
+      - my-network
+    volumes:
+      - database_volume:/var/lib/postgresql/data/
+      # - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      start_period: 10s
+      timeout: 4s
+      retries: 3
+
+  pg-admin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@email.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_PORT=5050
+    # volumes:
+    #   - ./docker_pgadmin_servers.json:/pgadmin4/servers.json
+    ports:
+      - "5050:5050"
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  database_volume:
+
+networks:
+  my-network:

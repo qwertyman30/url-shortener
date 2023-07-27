@@ -1,7 +1,9 @@
 import "dotenv/config";
 import type { Knex } from "knex";
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE } = process.env;
+const { DB_HOST, DB_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB } = process.env;
+
+console.log("knexfile.ts", DB_HOST, DB_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB);
 
 // Update with your config settings.
 const config: { [key: string]: Knex.Config } = {
@@ -10,16 +12,17 @@ const config: { [key: string]: Knex.Config } = {
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_DATABASE
+      user: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+      database: POSTGRES_DB
     },
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      tableName: "knex_migrations"
+      tableName: "knex_migrations",
+      directory: "./migrations",
     }
   },
 
@@ -28,16 +31,17 @@ const config: { [key: string]: Knex.Config } = {
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_DATABASE
+      user: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+      database: POSTGRES_DB
     },
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      tableName: "knex_migrations"
+      tableName: "knex_migrations",
+      directory: "./migrations",
     }
   },
 
@@ -46,19 +50,21 @@ const config: { [key: string]: Knex.Config } = {
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_DATABASE
+      user: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+      database: POSTGRES_DB
     },
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      tableName: "knex_migrations"
+      tableName: "knex_migrations",
+      directory: "./migrations",
     }
   }
 
 };
 
-module.exports = config;
+export default config;
+// module.exports = config;

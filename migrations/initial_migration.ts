@@ -2,7 +2,7 @@ import { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
     // create tables, columns, etc.
-    await knex.schema.createTable("users", table => {
+    await knex.schema.createTableIfNotExists("users", table => {
         table.increments("id").primary();
         table.string("username").notNullable().unique();
         table.text("password").notNullable();
@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<void> {
         // table.timestamps(true, true) is shortcut for:
         // table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
         // table.dateTime("updated_at").notNullable().defaultTo(knex.fn.now());
-    }).createTable("urls", table => {
+    }).createTableIfNotExists("urls", table => {
         table.string("id")
             .defaultTo(knex.raw("substring(md5(random()::text) from 0 for 7)"))
             .primary();
@@ -21,7 +21,7 @@ export async function up(knex: Knex): Promise<void> {
             .onDelete("CASCADE")
             .notNullable();
         table.timestamps(true, true);
-    }).createTable("visits", table => {
+    }).createTableIfNotExists("visits", table => {
         table.increments("id").primary();
         table.string("url_id")
             .references("id")
